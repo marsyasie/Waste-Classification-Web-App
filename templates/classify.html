@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI-Powered Waste Classification Web App | Classify Waste</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body class="classify-bg">
+    <nav class="navbar navbar-expand-lg navbar-primary shadow-sm">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="/">Waste Classifier</a>
+        <div>
+          <a href="/" class="btn btn-link">Home</a>
+          <a href="/classify" class="btn btn-link">Classify Waste</a>
+          <a href="/bins" class="btn btn-link">Bin Info</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-5">
+      <div class="row align-items-start gx-5">
+        <!-- Left Column: Upload Section -->
+        <div class="col-lg-6">
+          <div class="page-heading rounded-pill bg-white d-inline-block px-4 py-2 mb-4 shadow-sm">
+            <h1 class="fw-bold text-dark mb-0" style="font-size: 2.5rem;">Upload your waste image</h1>
+          </div>
+
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          <div class="alert alert-warning" role="alert">
+            {{ messages[0] }}
+          </div>
+          {% endif %}
+          {% endwith %}
+
+          <div class="upload-card rounded-4 shadow-sm mb-4">
+            <form method="post" enctype="multipart/form-data" id="upload-form">
+              <div class="drop-zone rounded-4" id="drop-zone">
+                <div class="drop-inner text-center">
+                  <img id="preview-image" class="preview-img mb-3 d-none" alt="Selected waste preview" />
+                  <svg id="upload-icon" width="80" height="80" class="mb-3" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <h3 id="upload-text" class="mb-2 text-white fw-bold">Drag & Drop to Upload File</h3>
+                  <p id="upload-subtext" class="text-white mb-3">OR</p>
+                  <input type="file" class="d-none" name="image" id="image-input" accept="image/*" />
+                  <button type="button" class="btn btn-light btn-sm px-4" onclick="document.getElementById('image-input').click();">Browse File</button>
+                  <p id="file-name" class="text-white mt-3 mb-0 d-none"></p>
+                </div>
+              </div>
+                      <div class="text-center mt-4">
+                <button type="submit" class="btn btn-light btn-lg px-5">Classify</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Column: About Section -->
+        <div class="col-lg-6">
+          <div class="bg-white p-5 rounded-4 shadow-sm">
+            <h3 class="text-teal fw-bold mb-4" style="font-size: 1.5rem;">ABOUT:</h3>
+            <p class="text-dark lh-lg" style="font-size: 1.1rem;">
+              This system uses AI to classify waste into 12 distinct classes, grouped into recyclable, non-recyclable, hazardous, and donation categories. By simply uploading a photo of waste, users can instantly identify its class and category.
+            </p>
+            <h4 class="text-teal fw-bold mt-4">LET'S CREATE A CLEANER AND GREENER WORLD!</h4>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="text-center py-4">
+      <p class="mb-0 text-muted">The AI-Powered Waste Classification Web App helps you choose the right bin every time.</p>
+    </footer>
+
+    <script>
+      const dropZone = document.getElementById("drop-zone");
+      const fileInput = document.getElementById("image-input");
+
+      dropZone.addEventListener("click", () => fileInput.click());
+
+      const previewImage = document.getElementById("preview-image");
+      const uploadIcon = document.getElementById("upload-icon");
+      const uploadText = document.getElementById("upload-text");
+      const uploadSubtext = document.getElementById("upload-subtext");
+      const fileNameText = document.getElementById("file-name");
+
+      function showPreview(file) {
+        if (!file) {
+          previewImage.classList.add("d-none");
+          fileNameText.classList.add("d-none");
+          uploadIcon.classList.remove("d-none");
+          uploadText.textContent = "Drag & Drop to Upload File";
+          uploadSubtext.textContent = "OR";
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          previewImage.src = reader.result;
+          previewImage.classList.remove("d-none");
+          uploadIcon.classList.add("d-none");
+          uploadText.textContent = "Image ready to upload";
+          uploadSubtext.textContent = "";
+          fileNameText.textContent = file.name;
+          fileNameText.classList.remove("d-none");
+        };
+        reader.readAsDataURL(file);
+      }
+
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files.length) {
+          showPreview(fileInput.files[0]);
+        }
+      });
+
+      dropZone.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        dropZone.classList.add("drop-zone-active");
+      });
+
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("drop-zone-active");
+      });
+
+      dropZone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dropZone.classList.remove("drop-zone-active");
+        if (event.dataTransfer.files.length) {
+          fileInput.files = event.dataTransfer.files;
+          showPreview(fileInput.files[0]);
+        }
+      });
+
+      // Show loading spinner on form submit
+      document.getElementById('upload-form').addEventListener('submit', function(e) {
+        document.getElementById('loading').classList.remove('d-none');
+        // Add a 2 second delay before submitting the form
+        e.preventDefault();
+        setTimeout(function() {
+          document.getElementById('upload-form').submit();
+        }, 700);
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay d-none">
+      <img src="/static/images/loading.gif" alt="Loading..." class="loading-gif" />
+    </div>
+  </body>
+</html>
