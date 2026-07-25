@@ -115,11 +115,8 @@ http://127.0.0.1:5000
 ---
 
 ## 👩‍🎓 Author
+📧 marsyasie4@gmail.com  
 
-**Nur Marsya Maisarah Binti Dahlan**  
-📧 marsya@example.com  
-🎓 Universiti Teknologi MARA (UiTM)  
-👨‍🏫 Supervisor: Dr. Mohd Razif Bin Shamsuddin
 
 ---
 
