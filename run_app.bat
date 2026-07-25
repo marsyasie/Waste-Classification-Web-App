@@ -1,0 +1,10 @@
+@echo off
+REM Run this script from the project root: C:\Users\Marsya\EcoSense
+cd /d "%~dp0"
+if exist ".venv\Scripts\activate.bat" (
+    call ".venv\Scripts\activate.bat"
+) else (
+    echo No virtual environment found at .venv. Running with system Python.
+)
+python app.py
+pause
